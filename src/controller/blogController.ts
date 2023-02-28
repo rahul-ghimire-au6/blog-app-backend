@@ -5,7 +5,7 @@ import { createBlogInterface } from '../interfaces/blogInterface';
 
 export const fetchAllBlog = async (req: Request, res: Response) => {
     try {
-        const blogData = await blogModel.find({}).lean();
+        const blogData = await blogModel.find({},{__v:0,updatedAt:0}).populate([{"path":"userId", "model":"users","select":{name:1,email:1}}]).lean();
         return res.status(200).json({
             success: true,
             message: "fetched blogs successfully",
@@ -19,7 +19,7 @@ export const fetchAllBlog = async (req: Request, res: Response) => {
 export const fetchBlogsByUserId = async (req: Request, res: Response) => {
     try {
         const userData = req.currentUser;
-        const blogData = await blogModel.find({ userId: userData._id }).lean();
+        const blogData = await blogModel.find({ userId: userData._id },{__v:0,updatedAt:0}).populate([{"path":"userId", "model":"users","select":{name:1,email:1}}]).lean();
         return res.status(200).json({
             success: true,
             message: "fetched blogs successfully",

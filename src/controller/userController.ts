@@ -19,6 +19,11 @@ export const registerUser = async (req: Request, res: Response) => {
             message: "user registered successfully"
         })
     } catch (err) {
+        const error = err as Error 
+        let errMessage = error.message.split(" ")
+        if(errMessage.includes("E11000")){
+            return handleError(res, {name:"MongoServerError",message:"please use another email id"}); 
+        }
         return handleError(res, err as Error);
     }
 }
@@ -39,7 +44,7 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(200).json({
                 success: true,
                 message: "user loggedIn successfully",
-                data: { authToken: token }
+                data: { userName: fetchUser.name, authToken: token, }
             })
         } else {
             return handleError(res, { name: "validationError", message: "Email or Password Entered is Wrong" }, 401)
